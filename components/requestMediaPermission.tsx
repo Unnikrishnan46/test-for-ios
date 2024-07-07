@@ -5,12 +5,12 @@ import {
   Text,
   View,
   Linking,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPhotoAndVideoPermissionModal } from "@/redux/modalState";
 import * as MediaLibrary from "expo-media-library";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {};
 

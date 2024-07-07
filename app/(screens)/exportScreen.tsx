@@ -1,10 +1,10 @@
-import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { RadioButton } from "react-native-paper";
 import SettingsTabWithSwitch from "@/components/settingsTabWithSwitch";
 import { EvilIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 
 type Props = {};
 
@@ -88,7 +88,7 @@ const ExportScreen = (props: Props) => {
             icon={<EvilIcons name="trash" size={30} />}
           />
         </View>
-        <View style={{width:"100%"}}>
+        <View style={{width:"100%",marginBottom:20}}>
           <TouchableOpacity onPress={()=>{router.navigate("(screens)/guideScreen")}} style={styles.btnStyle}>
             <Text style={[{color:"white"},styles.optionText]}>Export</Text>
           </TouchableOpacity>

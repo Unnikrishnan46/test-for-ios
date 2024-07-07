@@ -2,8 +2,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Stack, router } from "expo-router";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function ScreenEntry() {
   const themeState = useSelector((state: any) => state.themeState);
@@ -40,6 +39,7 @@ export default function ScreenEntry() {
           headerShown: false,
         }}
       />
+
       <Stack.Screen
         name="privacyScreen"
         options={{
@@ -167,6 +167,31 @@ export default function ScreenEntry() {
           headerShown: false,
         }}
       />
+
+      <Stack.Screen
+        name="voiceRecordModal"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+
+      <Stack.Screen
+        name="editDiary"
+        options={{
+          animation: "slide_from_right",
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="displayDiary"
+        options={{
+          animation: "slide_from_right",
+          headerShown: false,
+        }}
+      />
+
     </Stack>
   );
 }

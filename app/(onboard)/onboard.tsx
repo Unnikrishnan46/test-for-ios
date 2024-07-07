@@ -1,22 +1,38 @@
-import { StyleSheet, View ,FlatList,ViewToken} from "react-native";
-import React from "react";
+import { StyleSheet, View, FlatList, ViewToken } from "react-native";
+import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useOnboard } from "@/context/onboard";
-import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from "react-native-reanimated";
+import Animated, {
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from "react-native-reanimated";
 import data, { OnboardingData } from "@/util/onBoardData";
 import OnboardComponent from "@/components/onboardComponent";
 import Pagination from "@/components/pagination";
 import CustomButton from "@/components/customButton";
+import { useDispatch, useSelector } from "react-redux";
+import { setOnBoardScreenCompleted } from "@/redux/onBoardState";
+import {
+  router,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
 
 const OnboardScreen = () => {
-  const { setOnBoardUnSeen } = useOnboard();
+  const dispatch = useDispatch();
+  const onBoardScreenCompleted = useSelector(
+    (state: any) => state.onBoardState
+  ).onBoardScreenCompleted;
+
   const storeBoardScreenData = async () => {
     try {
       const data = {
         onboardSeen: true,
       };
       await AsyncStorage.setItem("inkwellAppData", JSON.stringify(data));
-      setOnBoardUnSeen();
+      dispatch(setOnBoardScreenCompleted(true));
       console.log("Data stored successfully");
     } catch (e) {
       console.error("Failed to save data", e);
@@ -26,7 +42,7 @@ const OnboardScreen = () => {
   const flatlistRef = useAnimatedRef<FlatList<OnboardingData>>();
   const x = useSharedValue(0);
 
-  const flatlistIndex =  useSharedValue(0);
+  const flatlistIndex = useSharedValue(0);
 
   const onViewableItemsChanged = ({
     viewableItems,
@@ -39,21 +55,42 @@ const OnboardScreen = () => {
   };
 
   const onScroll = useAnimatedScrollHandler({
-    onScroll:event=>{
-      x.value = event.contentOffset.x
+    onScroll: (event) => {
+      x.value = event.contentOffset.x;
+    },
+  });
+
+  const checkOnboardCompleted = async () => {
+    try {
+      const onBoardSeenData = await AsyncStorage.getItem("inkwellAppData");
+      const parsedData =
+        onBoardSeenData !== null ? JSON.parse(onBoardSeenData) : null;
+      const onboardSeenStatus =
+        parsedData !== null ? parsedData?.onboardSeen : null;
+      if (onboardSeenStatus) {
+        router.replace("/(app)/(tabs)/home");
+      }
+    } catch (error) {
+      console.log(error);
     }
-  })
+  };
+
+  useEffect(() => {
+    if (onBoardScreenCompleted) {
+      checkOnboardCompleted();
+    }
+  }, [onBoardScreenCompleted]);
 
   return (
     <View style={styles.container}>
       <Animated.FlatList
-      ref={flatlistRef}
-      onScroll={onScroll}
+        ref={flatlistRef}
+        onScroll={onScroll}
         data={data}
-        renderItem={({item,index}) => {
-          return <OnboardComponent item={item} index={index} x={x}/>;
+        renderItem={({ item, index }) => {
+          return <OnboardComponent item={item} index={index} x={x} />;
         }}
-        keyExtractor={item=>item.id}
+        keyExtractor={(item) => item.id}
         scrollEventThrottle={16}
         horizontal={true}
         bounces={false}
@@ -61,12 +98,12 @@ const OnboardScreen = () => {
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{
-          minimumViewTime:300,
-          viewAreaCoveragePercentThreshold:10
+          minimumViewTime: 300,
+          viewAreaCoveragePercentThreshold: 10,
         }}
       />
       <View style={styles.bottomContainer}>
-        <Pagination data={data} x={x}/>
+        <Pagination data={data} x={x} />
         <CustomButton
           flatlistRef={flatlistRef}
           flatlistIndex={flatlistIndex}
@@ -85,16 +122,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  bottomContainer:{
-    position:"absolute",
-    bottom:20,
-    left:0,
-    right:0,
-    marginHorizontal:30,
-    paddingVertical:30,
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center",
-    
-  }
+  bottomContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    marginHorizontal: 30,
+    paddingVertical: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 });

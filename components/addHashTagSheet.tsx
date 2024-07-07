@@ -1,37 +1,24 @@
-import { Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { Dimensions, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   setAddHashTagSheetRef,
   setIsAddHashTagSheetOpen,
 } from "@/redux/sheetState";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 type Props = {};
 
 const AddHashTagSheet = (props: Props) => {
-  const snapPoints = useMemo(() => ["30%"], []);
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const [tags, setTags] = useState(["Diary", "Journal", "Beautiful Day"]);
   const [newTag, setNewTag] = useState("");
+  const refRBSheet = useRef(null) as any;
 
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    dispatch(setAddHashTagSheetRef(bottomSheetRef.current));
-  }, [dispatch, bottomSheetRef]);
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
-  );
+    dispatch(setAddHashTagSheetRef(refRBSheet.current));
+  }, [dispatch, refRBSheet]);
 
   const handleAddTag = () => {
     if (newTag.trim().length > 0) {
@@ -41,17 +28,31 @@ const AddHashTagSheet = (props: Props) => {
   };
 
   return (
-    <BottomSheet
-      style={{ backgroundColor: "white" }}
-      ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      enablePanDownToClose={true}
-      backdropComponent={renderBackdrop}
-      index={-1}
-      enableContentPanningGesture={false}
-      onClose={() => {
-        dispatch(setIsAddHashTagSheetOpen(false));
+    <RBSheet
+      ref={refRBSheet}
+      height={Dimensions.get("window").height / 2}
+      customStyles={{
+        container:{
+          backgroundColor:"#fff",
+
+        },
+        wrapper: {
+          backgroundColor: "#00000036",
+          
+        },
+        draggableIcon: {
+          backgroundColor: "#000",
+        },
       }}
+      customModalProps={{
+        animationType: "none",
+        statusBarTranslucent: true,
+      }}
+      customAvoidingViewProps={{
+        enabled: true,
+      }}
+      draggable={true}
+      onClose={()=>{dispatch(setIsAddHashTagSheetOpen(false))}}
     >
       <ScrollView style={{paddingBottom:20}}>
       <View style={{paddingHorizontal:20,paddingBottom:Platform.select({ios:20,android:10})}}>
@@ -60,9 +61,9 @@ const AddHashTagSheet = (props: Props) => {
       
       <View style={styles.conatiner}>
         {tags?.map((item, index) => (
-          <TouchableWithoutFeedback key={index} style={styles.tagContainer}>
+          <TouchableOpacity key={index} style={styles.tagContainer}>
             <Text>{item}</Text>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         ))}
 
         <TextInput
@@ -74,7 +75,7 @@ const AddHashTagSheet = (props: Props) => {
         />
       </View>
       </ScrollView>
-    </BottomSheet>
+      </RBSheet>
   );
 };
 

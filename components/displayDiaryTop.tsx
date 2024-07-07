@@ -5,16 +5,15 @@ import { useRouter } from 'expo-router';
 
 type Props = {
   dayAndTimeDetails:any;
-  saveDiaryToFile:any;
 }
 
-const AddDiaryTop = ({dayAndTimeDetails,saveDiaryToFile}: Props) => {
+const DisplayDiaryTop = ({dayAndTimeDetails}: Props) => {
   const router = useRouter();
   return (
     <View>
       <View style={styles.topIconContainer}>
         <TouchableOpacity onPress={()=>{router.navigate("(app)/(tabs)/home")}}><EvilIcons name='close' size={30}/></TouchableOpacity>
-        <TouchableOpacity onPress={saveDiaryToFile}><Ionicons name='save-outline' size={30}/></TouchableOpacity>
+        {/* <TouchableOpacity onPress={saveDiaryToFile}><Ionicons name='save-outline' size={30}/></TouchableOpacity> */}
       </View>
       <View style={{display:"flex",flexDirection:"row", justifyContent:"space-between",paddingHorizontal:20,marginTop:15}}>
         <View style={{display:"flex",flexDirection:"column"}}>
@@ -28,7 +27,7 @@ const AddDiaryTop = ({dayAndTimeDetails,saveDiaryToFile}: Props) => {
   )
 }
 
-export default AddDiaryTop
+export default DisplayDiaryTop
 
 const styles = StyleSheet.create({
     topIconContainer:{

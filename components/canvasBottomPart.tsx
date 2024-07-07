@@ -2,25 +2,26 @@ import {
   FlatList,
   Image,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedDrawingColor, setSelectedDrawingTool, setStrokeWidth } from "@/redux/drawingToolsState";
 import { dataArray } from "@/util/colorList";
-import { TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type Props = {};
 
 const CanvasBottomPart = ({}: Props) => {
   const dispatch = useDispatch();
+  
   const selectedDrawingColor = useSelector(
     (state: any) => state.drawingToolState
   ).selectedDrawingColor;
   const selectedDrawingTool = useSelector(
     (state: any) => state.drawingToolState
   ).selectedDrawingTool;
-
+const [previousColor, setPreviousColor] = useState("#3498db");
   const strokeWidthSheetRef = useSelector((state:any)=>state.sheetState).strokeWidthSheetRef;
   const sheetState = useSelector((state:any)=>state.sheetState);
   const renderItem = ({ item }: any) => (
@@ -28,7 +29,7 @@ const CanvasBottomPart = ({}: Props) => {
       onPress={() => {
         dispatch(setSelectedDrawingColor(item?.color));
       }}
-      style={[styles.colorBox, { backgroundColor: item?.color }]}
+      style={[styles.colorBox, { backgroundColor: item?.color,borderColor:selectedDrawingColor === item?.color ? "#D3D3D3" : "white" }]}
     />
   );
 
@@ -42,6 +43,9 @@ const CanvasBottomPart = ({}: Props) => {
       dispatch(setStrokeWidth(3));
     }else if(toolName === "sketch"){
       dispatch(setStrokeWidth(10));
+    }else if(toolName === "eraser"){
+      dispatch(setStrokeWidth(10));
+      dispatch(setSelectedDrawingColor("#ffffff"));
     }
   }
 
@@ -50,7 +54,7 @@ const CanvasBottomPart = ({}: Props) => {
     if (sheetState?.isMenuBottomSheetOpen) {
       strokeWidthSheetRef?.close();
     } else {
-      strokeWidthSheetRef?.expand();
+      strokeWidthSheetRef?.open();
     }
   };
 
@@ -68,31 +72,31 @@ const CanvasBottomPart = ({}: Props) => {
         />
       </View>
       <View style={styles.toolsContainer}>
-        <TouchableWithoutFeedback onPress={()=>{handleImagePress("pencil")}}>
+        <TouchableOpacity onPress={()=>{handleImagePress("pencil")}}>
           <Image
             style={[styles.ToolsImage,{opacity:selectedDrawingTool === "pencil" ? 1 : 0.3}]}
             source={require("../assets/images/drawingTools/pencil1.png")}
           />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={()=>{handleImagePress("sketch")}}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>{handleImagePress("sketch")}}>
           <Image
             style={[styles.ToolsImage,{opacity:selectedDrawingTool === "sketch" ? 1 : 0.5}]}
             source={require("../assets/images/drawingTools/pen2.png")}
           />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={()=>{handleImagePress("pen")}}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>{handleImagePress("pen")}}>
           <Image
             style={[[styles.ToolsImage,{opacity:selectedDrawingTool === "pen" ? 1 : 0.5}]]}
             source={require("../assets/images/drawingTools/pen.png")}
           />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={()=>{handleImagePress("eraser")}}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>{handleImagePress("eraser")}}>
           <Image
             style={[styles.ToolsImage,{opacity:selectedDrawingTool === "eraser" ? 1 : 0.5}]}
             source={require("../assets/images/drawingTools/eracer.png")}
           />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={toggleStrokeSheet}
           style={{
             borderWidth: 1,
@@ -111,7 +115,7 @@ const CanvasBottomPart = ({}: Props) => {
               backgroundColor: "black",
             }}
           />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </View>
     </View>
   );

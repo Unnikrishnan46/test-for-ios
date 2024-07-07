@@ -1,6 +1,5 @@
-import { Platform, StyleSheet, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 type Props = {

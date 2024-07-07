@@ -3,12 +3,12 @@ import {
   Image,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
 import { useSelector } from "react-redux";
 import { router } from "expo-router";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SOTcard = () => {
   const themeState = useSelector((state: any) => state.themeState);

@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type Props = {
 
@@ -9,7 +8,7 @@ type Props = {
 const CanvasHeaderTab = (props: Props) => {
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback
+      <TouchableOpacity
       onPress={()=>{console.log("please");
       }}
         style={{
@@ -26,8 +25,8 @@ const CanvasHeaderTab = (props: Props) => {
         }}
       >
         <Text>Image</Text>
-      </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback
+      </TouchableOpacity>
+      <TouchableOpacity
         style={{
           width: "50%",
           backgroundColor: "white",
@@ -42,7 +41,7 @@ const CanvasHeaderTab = (props: Props) => {
         }}
       >
         <Text>Stickers</Text>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </View>
   );
 };

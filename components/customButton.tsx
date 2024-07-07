@@ -1,6 +1,7 @@
 import {
   FlatList,
   StyleSheet,
+  TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 import React from "react";
@@ -14,7 +15,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { OnboardingData } from "@/util/onBoardData";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type Props = {
   dataLength: number;
@@ -72,7 +72,7 @@ const CustomButton = ({ dataLength, flatlistIndex, flatlistRef, x ,storeBoardScr
     };
   });
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       onPress={() => {
         if (flatlistIndex.value < dataLength - 1) {
           flatlistRef.current?.scrollToIndex({
@@ -91,7 +91,7 @@ const CustomButton = ({ dataLength, flatlistIndex, flatlistRef, x ,storeBoardScr
         />
 
       </Animated.View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 

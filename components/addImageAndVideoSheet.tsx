@@ -1,7 +1,6 @@
-import { StyleSheet, View } from "react-native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import {
   setAddImageAndVideoSheetRef,
   setIsDiaryAddImageAndVideoSheetOpen,
@@ -10,59 +9,101 @@ import ImageSVG from "./svgComponent/imageFileSVG";
 import VideoSVG from "./svgComponent/videoSVG";
 import { Ionicons } from "@expo/vector-icons";
 import ImageGrid from "./ImageGrid";
-import * as MediaLibrary from 'expo-media-library';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import * as MediaLibrary from "expo-media-library";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { setImageState } from "@/redux/toolBarState";
+import { setCurrentContentItemCount, setNewDiaryData } from "@/redux/curdDiaryState";
 
 type Props = {};
 
 const AddImageAndVideoSheet = (props: Props) => {
-  const selectedTheme = useSelector((state: any) => state.themeState).selectedThemeData;
-  const isDiaryAddImageAndVideoSheetOpen = useSelector((state:any)=>state.sheetState).isDiaryAddImageAndVideoSheetOpen;
+  const selectedTheme = useSelector(
+    (state: any) => state.themeState
+  ).selectedThemeData;
+  const sheetState = useSelector((state: any) => state.sheetState);
+  const isDiaryAddImageAndVideoSheetOpen = useSelector(
+    (state: any) => state.sheetState
+  ).isDiaryAddImageAndVideoSheetOpen;
   const [images, setImages] = useState<any>([]);
+  const [selectedFile, setSelectedFile] = useState<any>(null);
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
-  const snapPoints = useMemo(() => ["40%"], []);
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const dispatch = useDispatch();
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-      />
-    ),
-    []
-  );
+  const refRBSheet = useRef(null) as any;
+  const currentContentItemCount = useSelector(
+    (state: any) => state.curdDiaryState
+  )?.currentContentItemCount;
+  const newDiaryData = useSelector(
+    (state: any) => state.curdDiaryState
+  )?.newDiaryData;
+
+  const handleSetSelectedFile = (file: any) => {
+    setSelectedFile(file);
+  };
 
   async function getAllImageFiles() {
-    if (permissionResponse?.status !== 'granted') {
+    if (permissionResponse?.status !== "granted") {
       await requestPermission();
     }
     const { assets } = await MediaLibrary.getAssetsAsync({
-      mediaType: 'photo',
+      mediaType: "photo",
     });
-    setImages(assets);    
+    setImages(assets);
   }
 
-  useEffect(()=>{
-    if(isDiaryAddImageAndVideoSheetOpen){
+  const handleAddFile = () => {
+    if (selectedFile) {
+      const currentData = newDiaryData;
+      const newItem = {
+        itemCount: currentContentItemCount + 1,
+        itemType: "image",
+        itemFile: selectedFile.uri,
+        itemContent:""
+      };
+      const updatedData = {
+        ...currentData,
+        body: [...currentData.body, newItem],
+      };
+      dispatch(setNewDiaryData(updatedData));
+      dispatch(setImageState(selectedFile));
+      dispatch(setCurrentContentItemCount(currentContentItemCount + 1));
+      sheetState?.addImageAndVideoSheetRef?.close();
+      dispatch(setIsDiaryAddImageAndVideoSheetOpen(false));
+    }
+  };
+
+  useEffect(() => {
+    if (isDiaryAddImageAndVideoSheetOpen) {
       getAllImageFiles();
     }
-  },[isDiaryAddImageAndVideoSheetOpen])
-
+  }, [isDiaryAddImageAndVideoSheetOpen]);
 
   React.useEffect(() => {
-    dispatch(setAddImageAndVideoSheetRef(bottomSheetRef.current));
-  }, [dispatch, bottomSheetRef]);
+    dispatch(setAddImageAndVideoSheetRef(refRBSheet.current));
+  }, [dispatch, refRBSheet]);
 
   return (
-    <BottomSheet
-      style={{ backgroundColor: "white" }}
-      ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      enablePanDownToClose={true}
-      backdropComponent={renderBackdrop}
-      index={-1}
+    <RBSheet
+      ref={refRBSheet}
+      height={Dimensions.get("window").height / 2}
+      customStyles={{
+        container: {
+          backgroundColor: "#fff",
+        },
+        wrapper: {
+          backgroundColor: "#00000036",
+        },
+        draggableIcon: {
+          backgroundColor: "#000",
+        },
+      }}
+      customModalProps={{
+        animationType: "none",
+        statusBarTranslucent: true,
+      }}
+      customAvoidingViewProps={{
+        enabled: false,
+      }}
+      draggable={true}
       onClose={() => {
         dispatch(setIsDiaryAddImageAndVideoSheetOpen(false));
       }}
@@ -73,14 +114,18 @@ const AddImageAndVideoSheet = (props: Props) => {
             <ImageSVG />
             <VideoSVG />
           </View>
-          <TouchableOpacity style={styles.addBtn}>
+          <TouchableOpacity onPress={handleAddFile} style={styles.addBtn}>
             <Ionicons name="add" size={25} color={"#36454F"} />
           </TouchableOpacity>
         </View>
         <View style={styles.seperator} />
-        <ImageGrid images={images}/>
+        <ImageGrid
+          images={images}
+          handleSetSelectedFile={handleSetSelectedFile}
+          selectedFile={selectedFile}
+        />
       </View>
-    </BottomSheet>
+    </RBSheet>
   );
 };
 

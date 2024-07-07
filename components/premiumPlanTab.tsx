@@ -4,12 +4,12 @@ import {
   View,
   Platform,
   Switch,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsTrialEnabled, setSelectedPlan } from "@/redux/premiumPlanState";
 import { LinearGradient } from "expo-linear-gradient";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {};
 

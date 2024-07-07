@@ -1,10 +1,10 @@
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import DiaryDashboard from '@/components/diaryDashboard';
 import MoodStaticsChart from '@/components/moodStaticsChart';
 import MoodStaticPieChart from '@/components/moodStaticPieChart';
 import BestDayInWeakGraph from '@/components/bestDayInWeakGraph';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 
 const Stats = () => {

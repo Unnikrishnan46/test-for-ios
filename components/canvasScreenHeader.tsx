@@ -1,26 +1,24 @@
 import {
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
 import { AntDesign, EvilIcons, Feather } from "@expo/vector-icons";
-import { useRouter, useNavigation } from "expo-router";
-import { TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useRouter } from "expo-router";
 
 type Props = {
   callUndo: any;
   callRedo: any;
   previousRoute: string | any;
+  callSaveFunction: any;
 };
 
-const CanvasScreenHeader = ({ callUndo, callRedo, previousRoute }: Props) => {
+const CanvasScreenHeader = ({ callUndo, callRedo, previousRoute ,callSaveFunction}: Props) => {
   const router = useRouter();
-  const navigation = useNavigation();
-
-  // router.navigate("(tabs)/add_diary")
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback
+      <TouchableOpacity
         onPress={() => {
           router.navigate(previousRoute);
         }}
@@ -34,7 +32,7 @@ const CanvasScreenHeader = ({ callUndo, callRedo, previousRoute }: Props) => {
         }}
       >
         <AntDesign name="close" size={20} color={"white"} />
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <View style={styles.rightIconContainer}>
         <View style={styles.undoReduContainer}>
           <TouchableOpacity
@@ -44,15 +42,17 @@ const CanvasScreenHeader = ({ callUndo, callRedo, previousRoute }: Props) => {
           >
             <EvilIcons name="undo" size={40} />
           </TouchableOpacity>
-          <TouchableWithoutFeedback
+          <TouchableOpacity
             onPress={() => {
               callRedo();
             }}
           >
             <EvilIcons name="redo" size={40} />
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </View>
-        <Feather name="save" size={30} />
+        <TouchableOpacity onPress={callSaveFunction}>
+          <Feather name="save" size={30} />
+        </TouchableOpacity>
       </View>
     </View>
   );

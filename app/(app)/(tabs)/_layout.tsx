@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs, useSegments } from "expo-router";
-import {  Platform, View } from "react-native";
+import {  Platform, TouchableOpacity, View } from "react-native";
 import {
   AntDesign,
   Feather,
@@ -8,14 +8,12 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsMenuBottomSheetOpen } from "@/redux/sheetState";
+import { setIsMenuBottomSheetOpen} from "@/redux/sheetState";
 import SearchScreenHeader from "@/components/searchScreenHeader";
 import StatsScreenHeader from "@/components/statsScreenHeader";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 
-
-export default function TabLayout() {
+const TabLayout = ()=> {
   const themeState = useSelector((state: any) => state.themeState);
   const sheetState = useSelector((state: any) => state.sheetState);
   const selectedMonthAndYear = useSelector(
@@ -24,8 +22,8 @@ export default function TabLayout() {
   const dispatch = useDispatch();
 
   const handleOpenPress = () => {
-    sheetState.menuBottomSheetRef?.expand();
-    dispatch(setIsMenuBottomSheetOpen(true));
+    sheetState.menuBottomSheetRef?.open();
+    dispatch(setIsMenuBottomSheetOpen(true));    
   };
 
   const handleClosePress = () => {
@@ -66,7 +64,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           headerShown: true,
           href: null,
@@ -115,7 +113,8 @@ export default function TabLayout() {
           href: "",
           tabBarIcon: ({ focused }) => (
             <TouchableOpacity
-              onPress={() => {
+              onPress={(event) => {
+                event.preventDefault();
                 toggleBottomSheet();
               }}
             >
@@ -166,6 +165,7 @@ export default function TabLayout() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
+                flex:1
               }}
             >
               <Ionicons
@@ -189,7 +189,6 @@ export default function TabLayout() {
         name="add_diary"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TouchableOpacity>
             <View
               style={{
                 alignItems: "center",
@@ -217,7 +216,6 @@ export default function TabLayout() {
                 }
               />
             </View>
-            </TouchableOpacity>
           ),
         }}
       />
@@ -237,7 +235,6 @@ export default function TabLayout() {
             marginLeft: 10,
           },
           tabBarIcon: ({ focused }) => (
-            <TouchableOpacity>
             <View
               style={{
                 alignItems: "center",
@@ -254,8 +251,10 @@ export default function TabLayout() {
                 size={28}
               />
             </View>
-            </TouchableOpacity>
           ),
+          headerLeft:()=>(
+            <StatsScreenHeader/>
+          )
         }}
       />
 
@@ -269,7 +268,6 @@ export default function TabLayout() {
             <SearchScreenHeader/>
           ),
           tabBarIcon: ({ focused }) => (
-            <TouchableOpacity>
             <View
               style={{
                 alignItems: "center",
@@ -286,7 +284,6 @@ export default function TabLayout() {
                 size={28}
               />
             </View>
-            </TouchableOpacity>
           ),
         }}
       />
@@ -294,3 +291,6 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+
+export default TabLayout;

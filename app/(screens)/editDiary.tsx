@@ -14,14 +14,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AddDiaryTop from "@/components/addDiaryTop";
 import DiaryToolBar from "@/components/diaryToolBar";
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import ShowSkiaImage from "@/components/showSkiaImage";
 import VoiceRecordingDisplay from "@/components/voiceRecordingDisplay";
 import ShowSticker from "@/components/showSticker";
 import { getCurrentDayDetails } from "@/util/utils";
 import {
   setCurrentContentItemCount,
-  setNewDiaryData,
+  setEditDiaryData,
 } from "@/redux/curdDiaryState";
 import uuid from "react-native-uuid";
 import ImageDisplay from "@/components/imageDisplay";
@@ -30,7 +30,8 @@ import * as FileSystem from 'expo-file-system';
 const statusBarHeight = StatusBar.currentHeight;
 const height = Dimensions.get("window").height;
 
-const AddDiary = () => {
+const EditDiaryScreen = () => {
+  const { id } = useLocalSearchParams() as any;
   const selectedTheme = useSelector(
     (state: any) => state.themeState
   ).selectedThemeData;
@@ -49,37 +50,56 @@ const AddDiary = () => {
   navigation.canGoBack();
   const [dayAndTimeDetails, setDayAndTimeDetails] = useState({});
 
-  const newDiaryData = useSelector(
+  const editDiaryData = useSelector(
     (state: any) => state.curdDiaryState
-  )?.newDiaryData;
+  )?.editDiaryData;
   const currentContentItemCount = useSelector(
     (state: any) => state.curdDiaryState
   )?.currentContentItemCount;  
 
-  useEffect(() => {
-    const data = getCurrentDayDetails(new Date());
-    setDayAndTimeDetails(data);
-    const id = uuid.v4();
-    dispatch(
-      setNewDiaryData({
-        id: `${id}-${new Date().toISOString()}`,
-        title: "",
-        CurrentDayDetails: data,
-        background:{backgroundImage:false,backgroundFile:undefined,backgroundColor:selectedTheme?.bodyBgColor},
-        body: [{ itemCount: 1, itemType: "text", itemContent: "" }],
-      })
-    );
-    dispatch(setCurrentContentItemCount(currentContentItemCount + 1));
-  }, []);
+  const loadDiaryFromFile = async (diaryId: string) => {
+    try {
+      const fileUri = FileSystem.documentDirectory + `diary-${diaryId}.json`;
+      const jsonString = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const jsonData = JSON.parse(jsonString);
+      // setData(jsonData);
+      setDayAndTimeDetails(jsonData.CurrentDayDetails);
+      dispatch(setEditDiaryData(jsonData));
+    } catch (error) {
+      console.error("Error loading diary:", error);
+    }
+  };
+
+  // useEffect(() => {
+  //   const data = getCurrentDayDetails(new Date());
+  //   setDayAndTimeDetails(data);
+  //   const id = uuid.v4();
+  //   dispatch(
+  //     setNewDiaryData({
+  //       id: `${id}-${new Date().toISOString()}`,
+  //       title: "",
+  //       CurrentDayDetails: data,
+  //       background:{backgroundImage:false,backgroundFile:undefined,backgroundColor:selectedTheme?.bodyBgColor},
+  //       body: [{ itemCount: 1, itemType: "text", itemContent: "" }],
+  //     })
+  //   );
+  //   dispatch(setCurrentContentItemCount(currentContentItemCount + 1));
+  // }, []);
+
+  useEffect(()=>{
+    loadDiaryFromFile(id);
+  },[]);
 
   const handleTitleChange = (e: any) => {
-    const currentData = newDiaryData;
+    const currentData = editDiaryData;
     const updatedData = { ...currentData, title: e };
-    dispatch(setNewDiaryData(updatedData));
+    dispatch(setEditDiaryData(updatedData));
   };
 
   const handleItemChange = (itemCount: number, newContent: string, itemType: string) => {
-    const currentData = newDiaryData;
+    const currentData = editDiaryData;
   
     // Map through items to update content
     const updatedBody = currentData.body.map((item: any) => {
@@ -105,7 +125,7 @@ const AddDiary = () => {
   
     // Dispatch updated data to Redux store
     const updatedData = { ...currentData, body: filteredBody };
-    dispatch(setNewDiaryData(updatedData));
+    dispatch(setEditDiaryData(updatedData));
   
     // Check if an item was deleted and dispatch to update currentContentItemCount
     if (finalCount < initialCount) {
@@ -117,7 +137,7 @@ const AddDiary = () => {
   
 
   const renderDiaryContent = () => {
-    return newDiaryData?.body.map((item: any) => {
+    return editDiaryData?.body.map((item: any) => {
       if (item.itemType === 'text') {
         return (
           <TextInput
@@ -208,8 +228,8 @@ const AddDiary = () => {
 
   const saveDiaryToFile = async () => {
     try {
-      const jsonString = JSON.stringify(newDiaryData);
-      const fileUri = FileSystem.documentDirectory + `diary-${newDiaryData.id}.json`;
+      const jsonString = JSON.stringify(editDiaryData);
+      const fileUri = FileSystem.documentDirectory + `diary-${editDiaryData.id}.json`;
 
       await FileSystem.writeAsStringAsync(fileUri, jsonString, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -231,7 +251,7 @@ const AddDiary = () => {
     >
       <ImageBackground
         style={styles.container}
-        source={{ uri: newDiaryData?.background?.backgroundFile }}
+        source={{ uri: editDiaryData?.background?.backgroundFile }}
         resizeMode="cover"
       >
         <ScrollView style={{flex:1}}>
@@ -259,7 +279,7 @@ const AddDiary = () => {
               placeholder="Title"
               placeholderTextColor={"#9983C3"}
               multiline={false}
-              value={newDiaryData?.title}
+              value={editDiaryData?.title}
             />
             {renderDiaryContent()}
           </View>
@@ -270,7 +290,7 @@ const AddDiary = () => {
   );
 };
 
-export default AddDiary;
+export default EditDiaryScreen;
 
 const styles = StyleSheet.create({
   container: {

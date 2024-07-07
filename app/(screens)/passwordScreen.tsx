@@ -4,11 +4,12 @@ import {
   View,
   TextInput,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 
 type Props = {};
 

@@ -2,6 +2,7 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, { useState } from "react";
@@ -23,9 +24,9 @@ import {
   setIsText2SpeechTabOpen,
 } from "@/redux/sheetState";
 import * as MediaLibrary from "expo-media-library";
-import { setPhotoAndVideoPermissionModal } from "@/redux/modalState";
+import { setIsVoiceRecordModal, setPhotoAndVideoPermissionModal } from "@/redux/modalState";
 import { router, useNavigation } from "expo-router";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import TextToSpeech from "./textToSpeech";
 
 type Props = {};
 
@@ -45,7 +46,7 @@ const DiaryToolBar = (props: Props) => {
       sheetState?.diaryBackgroundSheetRef?.close();
       dispatch(setIsDiaryBackgroundSheetOpen(false));
     } else {
-      sheetState?.diaryBackgroundSheetRef?.expand();
+      sheetState?.diaryBackgroundSheetRef?.open();
       dispatch(setIsDiaryBackgroundSheetOpen(true));
     }
   };
@@ -55,7 +56,7 @@ const DiaryToolBar = (props: Props) => {
       sheetState?.fontStyleSheetOpenRef?.close();
       dispatch(setIsFontStyleSheetOpen(false));
     } else {
-      sheetState?.fontStyleSheetOpenRef?.expand();
+      sheetState?.fontStyleSheetOpenRef?.open();
       dispatch(setIsFontStyleSheetOpen(true));
     }
   };
@@ -65,7 +66,7 @@ const DiaryToolBar = (props: Props) => {
       sheetState?.stickersSheetRef?.close();
       dispatch(setIsStickersSheetOpen(false));
     } else {
-      sheetState?.stickersSheetRef?.expand();
+      sheetState?.stickersSheetRef?.open();
       dispatch(setIsStickersSheetOpen(true));
     }
   };
@@ -93,7 +94,7 @@ const DiaryToolBar = (props: Props) => {
         sheetState?.addImageAndVideoSheetRef?.close();
         dispatch(setIsDiaryAddImageAndVideoSheetOpen(false));
       } else {
-        sheetState?.addImageAndVideoSheetRef?.expand();
+        sheetState?.addImageAndVideoSheetRef?.open();
         dispatch(setIsDiaryAddImageAndVideoSheetOpen(true));
       }
     }
@@ -116,9 +117,14 @@ const DiaryToolBar = (props: Props) => {
       sheetState?.addHashTagSheetRef?.close();
       dispatch(setIsAddHashTagSheetOpen(false));
     }else{
-      sheetState?.addHashTagSheetRef?.expand();
+      sheetState?.addHashTagSheetRef?.open();
       dispatch(setIsAddHashTagSheetOpen(true));
     }
+  }
+
+  const handleVoiceRecordBtnPress = ()=>{
+    router.navigate("(screens)/voiceRecordModal");
+    dispatch(setIsVoiceRecordModal(true));
   }
 
   return (
@@ -133,15 +139,7 @@ const DiaryToolBar = (props: Props) => {
           },
         ]}
       >
-        <View
-          style={[
-            styles.text2SpeechContainer,
-            { display: !isText2SpeechTabOpen ? "none" : "flex" },
-          ]}
-        >
-          <Text style={{ color: "gray" }}>Say something ...</Text>
-          <Text>.......</Text>
-        </View>
+        <TextToSpeech/>
         <View
           style={{
             display: "flex",
@@ -162,7 +160,7 @@ const DiaryToolBar = (props: Props) => {
           <TouchableOpacity onPress={handleText2SpeechPress}>
             <MicSVG />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleVoiceRecordBtnPress}>
             <HeadphoneSVG />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleFontStyleSheet}>
@@ -211,18 +209,5 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     // justifyContent: "space-between",
   },
-  text2SpeechContainer: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    position: "absolute",
-    height: 60,
-    width: "100%",
-    zIndex: 1,
-    bottom: 50,
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    borderTopLeftRadius: 9,
-    borderTopRightRadius: 9,
-  },
+  
 });

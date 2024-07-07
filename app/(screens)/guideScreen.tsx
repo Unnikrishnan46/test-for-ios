@@ -7,7 +7,7 @@ type Props = {};
 const GuideScreen = (props: Props) => {
   return (
     <ScrollView style={styles.container}>
-      <View style={{gap: 10,}}>
+      <View style={{gap: 10}}>
         <GuideTab
           heading="Quick guide"
           content="Try quick guide to write your memories"
@@ -38,6 +38,7 @@ const GuideScreen = (props: Props) => {
           bgColor="#EFC6F0"
           btnBgColor="#F4D9F5"
         />
+        <View style={{marginBottom:30}}/>
       </View>
     </ScrollView>
   );

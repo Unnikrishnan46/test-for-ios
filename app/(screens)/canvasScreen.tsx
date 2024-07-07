@@ -19,7 +19,7 @@ type Props = {};
 interface SkiaCanvasRef {
   handleUndo: () => void;
   handleRedo: () => void;
-  selectedColor:any;
+  handleSaveImage: ()=> void;
 }
 
 const CanvasScreen = (props: Props) => {
@@ -38,6 +38,10 @@ const CanvasScreen = (props: Props) => {
     skiaCanvasRef.current?.handleRedo();
   };
 
+  const callSaveFunction = ()=>{
+    skiaCanvasRef.current?.handleSaveImage();
+  }
+
   return (
     <SafeAreaView
       style={[
@@ -46,7 +50,7 @@ const CanvasScreen = (props: Props) => {
       ]}
     >
       <View style={{}}>
-        <CanvasScreenHeader callUndo={callUndo} callRedo={callRedo} previousRoute={previousRoute}/>
+        <CanvasScreenHeader callUndo={callUndo} callRedo={callRedo} previousRoute={previousRoute} callSaveFunction={callSaveFunction}/>
         <CanvasHeaderTab />
         <SkiaCanvas ref={skiaCanvasRef}/>
       </View>

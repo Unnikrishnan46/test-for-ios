@@ -3,16 +3,23 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { useRouter } from "expo-router";
 
-type Props = {};
+type Props = {
+  data:any;
+};
 
-const DiarySliced = (props: Props) => {
+const DiarySliced = ({data}: Props) => {
+  const  router = useRouter();
+  const handleDiaryPress = () => {
+    router.navigate({ pathname: `(screens)/displayDiary`, params: { id: data.id } });
+  };
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity onPress={handleDiaryPress} style={styles.container}>
       <View style={{ borderRightWidth: 1, borderColor: "#D2BFF7" ,paddingRight:10}}>
         <Image
           style={styles.mood}
@@ -30,7 +37,7 @@ const DiarySliced = (props: Props) => {
                 lineHeight: 62,
               }}
             >
-              30
+              {data?.CurrentDayDetails?.day}
             </Text>
             <Text
               style={{
@@ -51,30 +58,19 @@ const DiarySliced = (props: Props) => {
               fontFamily: "SFProDisplay",
             }}
           >
-            May
+            {data?.CurrentDayDetails?.monthName}
           </Text>
         </View>
         <Text style={{ fontSize: 20, fontFamily: "SFProDisplay" }}>
-          Thursday
+        {data?.CurrentDayDetails?.dayOfWeek}
         </Text>
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.diaryTitle} numberOfLines={1} ellipsizeMode="tail">
-          What an unforgetable and day in Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Voluptate vero non corrupti mollitia! Dolor
-          voluptates, error officia ducimus quos qui, impedit optio alias
-          praesentium totam repudiandae earum dolorem maiores blanditiis!
+        {data?.title}
         </Text>
         <Text style={styles.diaryBody} numberOfLines={2} ellipsizeMode="tail">
-          This morning I woke up at 6 AM. I did some studying. Then around 9 AM
-          I made Oatmeal for my Dad. He’s old so he can’t make his own food.
-          Someone has to help him. Then around 10:45 AM I sat in front of my
-          computer again. I got ready for my 11 AM online class. After my 11 AM
-          class, I made a cup of coffee for myself. Then at 12:30 PM, I started
-          another class. At 1:45 PM  I was done with my afternoon class. Then I
-          took a shower and washed some clothes. After I got out of the shower I
-          ate some light snacks. I don’t usually eat lunch if I eat breakfast
-          late. 
+        {data?.body[0]?.itemContent}
         </Text>
       </View>
     </TouchableOpacity>

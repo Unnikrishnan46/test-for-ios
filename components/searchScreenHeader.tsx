@@ -1,10 +1,9 @@
-import { Dimensions, Platform, StyleSheet, TextInput, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchQuery } from "@/redux/searchState";
 import { useRouter } from "expo-router";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 type Props = {};
 
@@ -42,9 +41,9 @@ const SearchScreenHeader = (props: Props) => {
         gap:10,
         marginBottom:1,
       }}>
-        <TouchableWithoutFeedback onPress={handleBackBtnPress}>
+        <TouchableOpacity onPress={handleBackBtnPress}>
           <AntDesign name="arrowleft" size={25} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         <TextInput
           style={styles.textInput}
           placeholder="Search"
@@ -54,9 +53,9 @@ const SearchScreenHeader = (props: Props) => {
           }}
         />
       </View>
-      <TouchableWithoutFeedback>
+      <TouchableOpacity>
         <AntDesign name="close" color={"black"} size={25} />
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </View>
   );
 };

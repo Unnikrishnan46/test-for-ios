@@ -8,6 +8,8 @@ import modalState from './modalState';
 import toolBarState from './toolBarState';
 import drawingToolsState from './drawingToolsState';
 import searchState from './searchState';
+import onBoardState from './onBoardState';
+import curdDiaryState from './curdDiaryState';
 
 
 export const store = configureStore({
@@ -20,7 +22,9 @@ export const store = configureStore({
     modalState:modalState,
     toolBarState:toolBarState,
     drawingToolState:drawingToolsState,
-    searchState:searchState
+    searchState:searchState,
+    onBoardState:onBoardState,
+    curdDiaryState:curdDiaryState
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

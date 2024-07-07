@@ -1,7 +1,6 @@
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {};
 

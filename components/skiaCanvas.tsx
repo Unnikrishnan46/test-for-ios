@@ -2,12 +2,16 @@ import React, { Children, forwardRef, useEffect, useImperativeHandle, useRef, us
 import { StyleSheet, View, Dimensions } from "react-native";
 import {
   Canvas,
+  ImageFormat,
   Path,
   SkPath,
   Skia,
+  useCanvasRef,
   useTouchHandler,
 } from "@shopify/react-native-skia";
-import {  useSelector } from "react-redux";
+import {  useDispatch, useSelector } from "react-redux";
+import { router } from "expo-router";
+import { setCurrentContentItemCount, setNewDiaryData } from "@/redux/curdDiaryState";
 
 
 type Props = {};
@@ -15,6 +19,7 @@ type Props = {};
 const height = Dimensions.get("window").height;
 
 const SkiaCanvas = forwardRef((props: Props, ref) => {
+  const canvasRef = useCanvasRef();
   const selectedDrawingColor = useSelector((state:any)=>state.drawingToolState).selectedDrawingColor;
   const strokeWidth = useSelector((state:any)=>state.drawingToolState).strokeWidth;
   const selectedDrawingTool = useSelector(
@@ -25,6 +30,14 @@ const SkiaCanvas = forwardRef((props: Props, ref) => {
   const [undonePaths, setUndonePaths] = useState<Array<{ path: SkPath; color: string; strokeWidth:number }>>([]);
   const selectedColor = useRef<string>(selectedDrawingColor);
   const selectedStrokeWidth = useRef<number>(strokeWidth);
+  const dispatch = useDispatch();
+
+  const newDiaryData = useSelector(
+    (state: any) => state.curdDiaryState
+  )?.newDiaryData;
+  const currentContentItemCount = useSelector(
+    (state: any) => state.curdDiaryState
+  )?.currentContentItemCount;
 
   useEffect(() => {
     selectedColor.current = selectedDrawingColor;
@@ -71,14 +84,38 @@ const SkiaCanvas = forwardRef((props: Props, ref) => {
     });
   };
 
+  const handleSaveImage = ()=>{
+    const image = canvasRef.current?.makeImageSnapshot();
+      if (image) {
+        const base64 = image.encodeToBase64(ImageFormat.PNG, 30);
+        if (base64) {
+          const currentData = newDiaryData;
+          const newItem = {
+            itemCount: currentContentItemCount + 1,
+            itemType: "skiaImage",
+            itemFile: base64,
+            itemContent:""
+          };
+          const updatedData = {
+            ...currentData,
+            body: [...currentData.body, newItem],
+          };
+          dispatch(setNewDiaryData(updatedData));
+          dispatch(setCurrentContentItemCount(currentContentItemCount + 1));
+          router.back();
+        }
+      }
+  }
+
   useImperativeHandle(ref, () => ({
     handleUndo,
     handleRedo,
+    handleSaveImage,
   }));
 
   return (
     <View style={styles.container}>
-      <Canvas style={styles.canvas} onTouch={handleTouch}>
+      <Canvas style={styles.canvas} onTouch={handleTouch} ref={canvasRef}>
         {Children.toArray(
           paths.map(({ path, color ,strokeWidth }, index) => (
             <Path key={index} path={path} strokeWidth={strokeWidth} color={color} style="stroke" />

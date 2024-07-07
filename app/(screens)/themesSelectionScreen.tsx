@@ -7,6 +7,7 @@ import {
   Platform,
   ImageBackground,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
@@ -15,7 +16,6 @@ import ThemeSelectionDisplay from "@/components/themeSelectionDisplay";
 import { router } from "expo-router";
 import Carousel from "react-native-reanimated-carousel";
 import ThemesDataList from "@/util/themeDataList";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Props = {};
 const statusBarHeight = StatusBar.currentHeight;
@@ -37,7 +37,7 @@ const ThemesSelectionScreen = (props: Props) => {
         <View style={styles.themeHeader}>
           <TouchableOpacity
             onPress={() => {
-              router.navigate("/");
+              router.navigate("/(app)/(tabs)/home");
             }}
             style={styles.closeBtn}
           >
